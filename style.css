@@ -1,0 +1,31 @@
+
+
+body{background: yellow;text-decoration : none;color: #595959;font-size: 15px;font-weight:light;
+font-family: small tahoma, "Bitstream Vera Sans", "Trebuchet MS", "Lucida Grande", lucida, helvetica, sans-serif;}
+#container{position: relative;min-height: 100vh;margin:0;}
+#containerbody{background-color: yellow;height: auto;width: 1020px;margin-left: auto;margin-right: auto;}
+#home{text-decoration : none;}
+/*/ Shadow effect  /*/
+div.noynoy {width: 900px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);text-align: center;}
+/*/ -------  /*/
+/*/ Footer design  /*/
+footer{
+  margin: 0;
+  padding: 5;
+  list-style: none;
+  text-align: middle;
+  width: auto;
+  height: 70;
+  overflow: hidden;
+  text-align: center;
+  background: #4CAF50;background-color: black;color: white;}
+footer a{
+  position: relative;
+  top: 8px;
+  border-left: 1px solid white;text-decoration: none;color:white;}
+a.hover{border-left: none;}
+a:hover{color: yellow;}
+/*/ -------  /*/
+/*/ ads  /*/
+#ads{position: absolute; top:875;}
+/*/ -------  /*/

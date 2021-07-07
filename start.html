@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://shoutbox.widget.me/start.html?uid=0tjqfqsc -->
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Shoutbox</title>
+<style>
+html {
+-moz-text-size-adjust:100%;
+-webkit-text-size-adjust:100%;
+-ms-text-size-adjust:100%;
+}
+
+body {
+margin:0px;
+padding:0px;
+overflow:hidden;
+background-color:#FFFFFF;
+font-family:Helvetica,Arial,sans-serif;
+font-size:11px;
+color:#000000;
+}
+
+a {
+text-decoration:none;
+color:#606060;
+}
+
+form {
+margin:0px;
+padding:0px;
+}
+
+input {
+margin:0px 0px 2px 0px;
+padding:4px;
+border:0px;
+outline:none;
+resize:none;
+font-family:Helvetica,Arial,sans-serif;
+width:100%;
+box-sizing:border-box;
+}
+
+#shout[disabled] {
+color:#999999;
+}
+
+#shout {
+cursor:pointer;
+background-color:#EEEEEE;
+font-size:12px;
+color:#606060;
+}
+
+#name,#url,#message {
+border-bottom:1px solid #CCCCCC;
+background-color:#EAEAEA;
+font-size:12px;
+color:#000000;
+height:24px;
+}
+
+#name:focus,#url:focus,#message:focus {
+border-bottom:1px solid #C0C0C0;
+background-color:#F4F4F4;
+}
+
+#name,#shout,#url {
+display:none;
+}
+
+.message,.details {
+background-color:#F6F6F6;
+cursor:default;
+}
+
+.message {
+margin:0px;padding:5px 5px 0px 5px;
+border-top:1px solid #EEEEEE;
+}
+
+.details {
+margin:0px 0px 2px 0px;
+padding:3px 5px 5px 5px;
+font-size:11px;
+color:#999999;
+}
+
+#archive {
+margin:0px;
+padding:0px;
+}
+
+#home,#more {
+margin:3px 5px 5px 5px;
+padding:0px;
+}
+
+@media (min-width:200px) {body {font-size:12px;}}
+@media (min-width:300px) {body {font-size:13px;}#name,#url,#message {font-size:13px;}}
+@media (min-width:500px) {body {font-size:14px;}#name,#url,#message {font-size:14px;height:25px;}}
+@media only print {body {display:none;}}
+.details a {color:#999999;}
+#home {float:left;}
+#more {float:right;}
+</style>
+<script>
+if (top.frames.length==0) {top.location.href='https://shoutbox.widget.me/shoutbox.html';}
+function loadClosed() {getShout.value='Refreshed';setTimeout("getShout.value='Shout';",1500);}
+function getDayName(dateStr) {var date=new Date(dateStr);return date.toLocaleDateString("en-US",{ weekday:'long'});}
+function cleanIt(myIn) {if (myIn.defaultValue==myIn.value || guestN==myIn.value) {myIn.value='';}}
+function fillIt(myIn) {if (myIn.value=='') {myIn.value=myIn.defaultValue;}}
+ref=document.referrer;
+str=location.href;
+
+function getValue(strArg) {
+var _url=str+"&";
+var regex=new RegExp("(\\?|\\&)"+strArg+"=([^\\&\\?]*)\\&","gi");
+if (!regex.test(_url)) return "";
+var arr=regex.exec(_url);
+return (RegExp.$2);
+}
+
+uid=getValue("uid");
+uni=uid.split('').filter(function(item,i,ar){return ar.indexOf(item)===i;}).join('');
+if (uni.length<3) {uid='default';}
+
+function getLastMod() {
+http=new XMLHttpRequest();
+http.onreadystatechange=triggeredLast;
+http.open('HEAD',userf);
+http.send(null);
+}
+
+function triggeredLast() {
+if (http.readyState==4) {
+if (http.status==200) {
+thisDate=http.getResponseHeader('Last-Modified');
+if (thisDate!=lastDate) {
+loadNow();
+}else{
+setTimeout("loadClosed();",1000);
+loadingNow='';
+newBox='';
+}
+}
+}
+}
+
+newBox='';
+loadingNow='';
+thisDate='2';
+lastDate='1';
+
+function loadStream() {
+if (loadingNow!='i') {
+getShout.value='Refreshing';
+loadingNow='i';
+if (countTmp>600&&liveRate<60) {
+clearInterval(stopStream);
+liveRate=60;
+startLive();
+} else if (countTmp>300&&liveRate<30) {
+clearInterval(stopStream);
+liveRate=40;
+startLive();
+}else{}
+zid=Math.random();zid*=10000000000000;zid=Math.ceil(zid);
+userf='user/'+uid+'.html?zid='+zid;
+if (lastDate=='1') {
+loadNow();
+}else{
+getLastMod();
+}
+}
+}
+
+function loadNow() {
+msgs=new XMLHttpRequest();
+msgs.onreadystatechange=triggeredStream;
+msgs.open("GET",userf);
+msgs.send(null);
+}
+
+function triggeredStream() {
+if (msgs.readyState==4) {
+if (msgs.status==200) {
+manageData();
+nowResults=getResults;
+getMsgs.innerHTML=getPreview+nowResults;
+lastDate=msgs.getResponseHeader('Last-Modified');
+setTimeout("loadClosed();",1000);
+loadingNow='';
+newBox='';
+moreCounter=1;
+getMore.style.display='block';
+pastResults='';
+}
+if (msgs.status==404) {
+loadClosed();
+loadingNow='';
+if (newBox!='i') {
+newBox='i';
+pushDemo();
+}
+}
+}
+}
+
+function manageData() {
+getResults='';
+getContent=msgs.responseText;
+sortContent=getContent.split('\n');
+for (var i=0; i<sortContent.length; ++i) {
+partContent=sortContent[i].split('|');
+getWebs=partContent[0];
+getNick=partContent[1];
+getText=partContent[2];
+getDatu=String(partContent[3]).split(' ');
+getDatp=getDatu[0].split('.');
+getSour=partContent[4];
+dateStr=getDatp[1]+'/'+getDatp[0]+'/'+getDatp[2];
+if (getNick) {
+if (!getSour) {getSour='shoutbox.widget.me';}
+if (getWebs.match(/\./)) {partWeb=getWebs.split('.');pushWebs=' #<a href="http://'+getWebs+'" title="Link to '+getWebs+'" target="_blank">'+partWeb[0].substring(0,15)+'</a>';}else{pushWebs='';}
+getResults=getResults+'<div class="message" onmouseup="reply(event,\''+getNick+'\');"><b>'+getNick+'</b> '+getText+pushWebs+'</div><div class="details"><a href="http://'+getSour+'" title="Shout via '+getSour+'" target="_top">'+getDayName(dateStr)+', '+partContent[3]+'</a></div>';
+}
+}
+}
+
+moreCounter=1;
+
+function loadMore() {
+getMore.style.display='none';
+msgs=new XMLHttpRequest();
+moreCounter++;
+moref='NgaiChunCheung?service=more&uid='+uid+'&pg='+moreCounter+'&iu='+uni.length;
+msgs.onreadystatechange=triggeredMore;
+msgs.open("GET",moref);
+msgs.send(null);
+}
+
+pastResults='';
+
+function triggeredMore() {
+if (msgs.readyState==4) {
+if (msgs.status==200) {
+manageData();
+if (getContent=="M") {
+getForm.scrollIntoView(true);
+getMessage.focus();
+}else{
+getMore.style.display='block';
+pastResults=pastResults+getResults;
+getMsgs.innerHTML=getPreview+nowResults+pastResults;
+try {
+selection=window.getSelection();
+selection.removeAllRanges();
+} catch (e) {}
+}
+}
+}
+}
+
+helloed='';
+guestN='';
+
+function hello() {
+if (helloed!='i') {
+helloed='i';
+aloha=new XMLHttpRequest();
+hellof='NgaiChunCheung?service=hello&uid='+uid+'&istat='+screen.width+'x'+screen.height+'&iu='+uni.length;
+aloha.onreadystatechange=helloing;
+aloha.open("GET",hellof);
+aloha.send(null);
+}
+}
+
+function helloing() {
+if (aloha.readyState==4) {
+if (aloha.status==200) {
+guestN=aloha.responseText;
+if (guestN.length>0) {getName.value=guestN;}
+}
+}
+}
+
+countKey=0;
+getPreview='';
+nowResults='';
+
+function pushPreview() {
+inick=getName.value;
+itext=getMessage.value;
+if (inick && itext) {
+getMyTime();
+howFast();
+getPreview='<div class="message"><b>'+inick+'</b> '+itext+'</div><div class="details">'+idate+' '+itime+'</div>';
+}else{
+getPreview='';
+}
+getMsgs.innerHTML=getPreview+nowResults+pastResults;
+clearInterval(stopDemo);
+countKey++;
+if (itext.match(/htt|www/)) {
+getUrl.style.display='block';
+}
+}
+
+function changeCss(theClass,theElement,theValue) {
+var x=document.getElementsByClassName(theClass);
+var i;
+for (i=0; i<x.length; i++) {
+x[i].style[theElement]=theValue;
+}
+}
+
+function leftPad(number,targetLength) {
+var output=number+'';
+while (output.length<targetLength) {
+output='0'+output;
+}
+return output;
+}
+
+function getMyTime() {
+Jetzt=new Date();
+Tag=Jetzt.getDate();
+Monat=Jetzt.getMonth()+1;
+Jahr=Jetzt.getYear();
+Stunden=Jetzt.getHours();
+Minuten=Jetzt.getMinutes();
+Sekunden=Jetzt.getSeconds();
+Tag=leftPad(Tag,2);
+Monat=leftPad(Monat,2);
+Stunden=leftPad(Stunden,2);
+Minuten=leftPad(Minuten,2);
+Sekunden=leftPad(Sekunden,2);
+if (Jahr<2000) Jahr=Jahr+1900;
+idate=Tag+"."+Monat+"."+Jahr;
+itime=Stunden+":"+Minuten+":"+Sekunden;
+}
+
+liveRate=20;
+stopStream='';
+
+function startLive() {
+stopStream=setInterval("loadStream();",liveRate*1000);
+}
+
+startSpeed='';
+
+function howFast() {
+if (startSpeed!='i') {
+countSpeed=0;
+startSpeed='i';
+}
+}
+
+wokenUp='';
+
+function wakeUp() {
+if (wokenUp!='i') {
+getBody.style.overflow='auto';
+getName.style.display='block';
+getShout.style.display='block';
+startDemo();
+countTmp=0;
+startLive();
+loadStream();
+wokenUp='i';
+}
+}
+
+pos=1;
+stopDemo='';
+getDemo='';
+
+function pushDemo() {
+demoBox=new Array("System|The shoutbox is ready for new messages","Robot|At the moment shoutbox has no messages to be displayed","System|Shoutbox will automatically check and load new messages without needing you to do anything","Shoutbox|The automated management system will handle all messages","Demo|These are sample messages which disappear after first shout");
+for (var i=0; i<demoBox.length; ++i) {
+if (i>=pos) {}else{
+partDemo=demoBox[i].split('|');
+getDemo='<div class="message"><b>'+partDemo[0]+'</b> '+partDemo[1]+'</div><div class="details">11.08.2008 01:02:0'+i+'</div>'+getDemo;
+}
+}
+if (newBox=='i') {
+getShout.value='Refreshing';
+getMsgs.innerHTML=getDemo;
+}
+pos++;
+getDemo='';
+if (pos>demoBox.length) {
+clearInterval(stopDemo);
+loadClosed();
+}
+}
+
+function startDemo() {
+if (newBox=='i') {
+stopDemo=setInterval("pushDemo();",1234);
+}
+}
+
+function loadStart() {
+getBody=document.body;
+getShout=document.getElementById("shout");
+getName=document.getElementById("name");
+getUrl=document.getElementById("url");
+getMessage=document.getElementById("message");
+getForm=document.getElementById("fsb");
+getMore=document.getElementById("more");
+getMsgs=document.getElementById("messages");
+getBody.onmouseover=function(){wakeUp();};
+getName.onkeyup=function(){pushPreview();};
+getMessage.onkeyup=function(){pushPreview();};
+getForm.onmouseover=function(){hello();};
+setInterval("startCounter();",1000);
+loadStream();
+changeSize();
+}
+
+function changeSize() {
+if (wokenUp=='i') {
+changeCss('details','display','block');
+changeCss('message','margin-bottom','0px');
+changeCss('message','padding-bottom','0px');
+changeCss('message','white-space','normal');
+changeCss('message','overflow','visible');
+}else{
+changeCss('details','display','none');
+changeCss('message','margin-bottom','2px');
+changeCss('message','padding-bottom','5px');
+changeCss('message','white-space','nowrap');
+changeCss('message','overflow','hidden');
+}
+}
+
+countTmp=0;
+countRead=0;
+countSpeed=0;
+
+function startCounter() {
+countRead++;
+countSpeed++;
+countTmp++;
+changeSize();
+}
+
+function convInp(str) {
+tmp=str.replace(/&/g,'%26');
+tmp=tmp.replace(/#/g,'%23');
+tmp=tmp.replace(/\+/g,'%2B');
+tmp=tmp.replace(/;/g,':');
+return tmp;
+}
+
+workingNow='';
+
+function sendMsg() {
+if (workingNow!='i') {
+workingNow='i';
+getShout.disabled=true;
+getShout.value='Sending';
+clearInterval(stopStream);
+news=new XMLHttpRequest();
+getMyTime();inick=convInp(inick);itext=convInp(itext);
+newsf='NgaiChunCheung?service=save&uid='+uid+'&idate='+idate+'&itime='+itime+'&istat='+countRead+'|'+countKey+'||'+countSpeed+'|'+screen.width+'x'+screen.height+'&inick='+inick+'&itext='+itext+'&iurl='+getUrl.value+'&iref='+ref+'&iu='+uni.length;
+news.onreadystatechange=finalMsg;
+news.open("GET",newsf);
+news.send(null);
+}
+}
+
+function finalMsg() {
+if (news.readyState==4) {
+if (news.status==200) {
+ianswer=news.responseText;
+getShout.value='Processed';
+getPreview='';
+workingNow='';
+countKey=0;
+setTimeout("getShout.disabled=false;",500);
+getUrl.value='http://';
+getMessage.value='';
+getMessage.focus();
+countTmp=0;
+liveRate=20;
+startSpeed='';
+startLive();
+
+if (ianswer=="0") {
+getUrl.style.display='none';
+if ('Guest'!=inick) {
+getName.style.display='none';
+}
+
+lastDate='1';
+loadingNow='';
+loadStream();
+
+}else{
+getShout.value='Rejected';
+setTimeout("getShout.value='Shout';",1500);
+}
+
+}
+}
+}
+
+function clearText() {
+inick=getName.value;
+itext=getMessage.value;
+if (inick=="") {
+getName.focus();
+return false;
+}else if (itext=="" || itext=="Message") {
+getMessage.focus();
+return false;
+}else{
+sendMsg();
+return false;
+}
+}
+
+lastReply='';
+
+function reply(e,nick) {
+var rightclick;
+if (!e) var e=window.event;
+if (e.which) rightclick=(e.which==3);
+else if (e.button) rightclick=(e.button==2);
+if (!rightclick) return true;
+var interupt=true;
+document.oncontextmenu=function(){if(interupt){interupt=false;return false;};};
+getMessage.focus();if(lastReply!=nick){getMessage.value=getMessage.value+" @"+nick+" ";}
+getForm.scrollIntoView(true);lastReply=nick;
+}
+
+console.log("11069 Cranes, 161 Days, 22 Cities, Oct 2013 - Aug 2019 by Ngai Chun Cheung");
+console.log("Ngai Chun Cheung folded more than 10.000 origami cranes in less than 6 years");
+console.log("Leaving a trail of thousand origami cranes by Ngai Chun Cheung (* 1986, Germany)");
+</script>
+</head><body onload="loadStart();"><form id="fsb" onsubmit="return clearText();"><input id="name" type="text" maxlength="25" value="Guest" title="Your name input" onfocus="cleanIt(this);" onblur="fillIt(this);"><input id="url" type="text" maxlength="100" value="http://" title="Your website input" onfocus="cleanIt(this);" onblur="fillIt(this);"><input id="message" type="text" maxlength="500" autocomplete="off" value="Message" title="Your message input" onfocus="cleanIt(this);" onblur="fillIt(this);"><input id="shout" type="submit" accesskey="s" value="Shout" title="Send message here"></form><div id="messages"><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> I meant to write s hyphen hyphen p i d but there must be a filter somewhere as one hyphen was removed. I'm obviously indulging in a soliloquy :) May God bless our country!</div><div class="details" style="display: none;"><a href="http://www.noynoy-aquino.com/" title="Shout via www.noynoy-aquino.com/" target="_top">Thursday, 24.06.2021 18:49</a></div><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> And to the one who commented last year that this page is too yellow.. why go to this page in the first place? Some people are just plain s-pid.</div><div class="details" style="display: none;"><a href="http://www.noynoy-aquino.com/" title="Shout via www.noynoy-aquino.com/" target="_top">Thursday, 24.06.2021 18:48</a></div><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> Not sure why I am also Guest 49 when the Guest 49 of 16.02.2021 is clearly a troll or x. Anyway, just wondering :)</div><div class="details" style="display: none;"><a href="http://www.noynoy-aquino.com/" title="Shout via www.noynoy-aquino.com/" target="_top">Thursday, 24.06.2021 18:45</a></div><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> A big loss to the country.. the trolls and blind followers of Du-dirty and the deluded Marcoses must be celebrating along with their bosses who have hypocritically extended their condolences. God save our country!</div><div class="details" style="display: none;"><a href="http://www.noynoy-aquino.com/" title="Shout via www.noynoy-aquino.com/" target="_top">Thursday, 24.06.2021 18:44</a></div><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> Bongbong Marcos For President 2022 Sara Duterte For Vice President 2022!</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Tuesday, 16.02.2021 00:08</a></div><div class="message" onmouseup="reply(event,&#39;Philippines Not China&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Philippines Not China</b> Ikulong ang mga Marcos, Duterte, Arroyo, at iba pang kurakot! Ibalik ang Pilipinas sa Pilipino! Maging Pilipino at matalino, wag maging tabogong DDS!</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Saturday, 24.10.2020 11:08</a></div><div class="message" onmouseup="reply(event,&#39;Guest 182&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 182</b> 👎🏽🎗🖕🏽</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Wednesday, 21.10.2020 23:14</a></div><div class="message" onmouseup="reply(event,&#39;Guest 58&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 58</b> No to aquino! Yes to marcos!</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Monday, 21.09.2020 03:52</a></div><div class="message" onmouseup="reply(event,&#39;Noel Alinsangan Sabido&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Noel Alinsangan Sabido</b> Putang inang page na ito! SOBRANG DILAW PA DIN</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Sunday, 05.04.2020 23:52</a></div><div class="message" onmouseup="reply(event,&#39;Noel Alinsangan Sabido&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Noel Alinsangan Sabido</b> Duterte and Marcoses for 2023!</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Sunday, 05.04.2020 23:50</a></div><div class="message" onmouseup="reply(event,&#39;Guest 121&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 121</b> wala bang option tanggalin tong chat box na to?</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/About.html" title="Shout via noynoy-aquino.com/About.html" target="_top">Wednesday, 11.12.2019 15:21</a></div><div class="message" onmouseup="reply(event,&#39;Guest 121&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 121</b> wait never mind may bumalik</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/About.html" title="Shout via noynoy-aquino.com/About.html" target="_top">Wednesday, 11.12.2019 15:21</a></div><div class="message" onmouseup="reply(event,&#39;Guest 121&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 121</b> ayan medyo malinis na</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/About.html" title="Shout via noynoy-aquino.com/About.html" target="_top">Wednesday, 11.12.2019 15:21</a></div><div class="message" onmouseup="reply(event,&#39;Guest 121&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 121</b> ilan pa ba kelangan ibaba</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/About.html" title="Shout via noynoy-aquino.com/About.html" target="_top">Wednesday, 11.12.2019 15:21</a></div><div class="message" onmouseup="reply(event,&#39;Guest 121&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 121</b> wait lang ha ibababa ko lang yung mga rude na people para medyo maaliwalas naman tong pgae</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/About.html" title="Shout via noynoy-aquino.com/About.html" target="_top">Wednesday, 11.12.2019 15:21</a></div><div class="message" onmouseup="reply(event,&#39;Guest 125&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 125</b> support sen. Bam aquino</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/?fbclid=IwAR3GdOemHULxOOQNaFpyhmvu7QJldQqqqYUHFvHVb-eKiU-gwYJF_ZnYJcc" title="Shout via noynoy-aquino.com/?fbclid=IwAR3GdOemHULxOOQNaFpyhmvu7QJldQqqqYUHFvHVb-eKiU-gwYJF_ZnYJcc" target="_top">Monday, 11.03.2019 17:41</a></div><div class="message" onmouseup="reply(event,&#39;Guest 58&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 58</b> Noynoy Aquino Baklang Abnoy! haha</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Tuesday, 09.10.2018 22:11</a></div><div class="message" onmouseup="reply(event,&#39;Guest 49&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 49</b> is there an email to reach the team of president aquino? thanks</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Monday, 21.05.2018 18:27</a></div><div class="message" onmouseup="reply(event,&#39;Guest 147&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 147</b> tanggalin ang tiwali. itama ang mali. right</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Wednesday, 08.11.2017 18:34</a></div><div class="message" onmouseup="reply(event,&#39;Guest 147&#39;);" style="margin-bottom: 2px; padding-bottom: 5px; white-space: nowrap; overflow: hidden;"><b>Guest 147</b> Man, I worked 14 hours a day to reach where I am now with enough savings to buy a house and car. We (Aquinos and Cojuancos) earned our monies through legal and moral means. Hindi ba masakit eh yung kapitbahay mo nakaw na yaman ang nakuha habang tayong mga manggagawa eh kayod at magbaklas ng buto</div><div class="details" style="display: none;"><a href="http://noynoy-aquino.com/" title="Shout via noynoy-aquino.com" target="_top">Wednesday, 08.11.2017 18:34</a></div></div><div id="archive"><a id="home" href="https://shoutbox.widget.me/" title="Get your shoutbox" target="_blank">Box</a> <a id="more" href="javascript:loadMore();" title="Load more messages" style="display: block;">More</a></div></body></html>

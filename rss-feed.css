@@ -1,0 +1,43 @@
+.rss-box {
+	 margin: 0.5em;
+	 width: 600px;
+	border: 0px solid #990000;
+	 
+}
+.rss-items {
+	margin-top:0px;
+	padding:0.5em; 0.5em;
+	margin-left:0px;
+	color: #b3b3b3;
+	text-align: justify;
+}
+p.rss-title {
+
+}
+
+.rss-title {
+
+	text-decoration: none;
+    text-transform: uppercase;
+	font-family: verdana, small tahoma, "Bitstream Vera Sans", "Trebuchet MS", "Lucida Grande", lucida, helvetica, sans-serif;
+	font-size: 15px;
+	color:black;
+	font-weight:bold;
+}
+.rss-item  {
+
+  font-family: verdana, small tahoma, "Bitstream Vera Sans", "Trebuchet MS", "Lucida Grande", lucida, helvetica, sans-serif;
+  font-size: 13px;
+  padding-bottom:1em;
+}
+
+.rss-item a {
+	
+	color: #330066;
+}
+	
+.rss-item a:hover {
+color: gray;
+}
+
+
